@@ -1,4 +1,4 @@
-export const QUESTIONS = [
+window.__APP_QUESTIONS = [
   { id: 1, text: "Я люблю робити подарунки, навіть коли можу не дозволити.", archetype: "lover" },
   { id: 2, text: "Мені складно відмовити, коли хтось просить допомоги.", archetype: "caregiver" },
   { id: 3, text: "Я розквітаю, коли мене помічають.", archetype: "hero" },

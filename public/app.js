@@ -1,7 +1,6 @@
-import { ARCHETYPES } from "./data/archetypes.js";
-import { QUESTIONS } from "./data/questions.js";
-
 const PROGRESS_KEY = "moneyDnaProgress";
+const ARCHETYPES = window.__APP_ARCHETYPES || {};
+const QUESTIONS = window.__APP_QUESTIONS || [];
 const TOTAL_QUESTIONS = QUESTIONS.length;
 
 const SAMPLE_SCORES = {

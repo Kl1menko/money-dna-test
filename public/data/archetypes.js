@@ -1,4 +1,4 @@
-export const ARCHETYPES = {
+window.__APP_ARCHETYPES = {
   king: {
     key: "king",
     name: "Король",
