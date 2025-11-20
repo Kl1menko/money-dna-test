@@ -43,7 +43,8 @@ const elements = {
   summaryTop3: document.getElementById("summary-top3"),
   summaryAll: document.getElementById("summary-all"),
   detailsContainer: document.getElementById("details-container"),
-  actionChecklist: document.getElementById("action-checklist")
+  actionChecklist: document.getElementById("action-checklist"),
+  userDataError: document.getElementById("user-data-error")
 };
 
 const userInputs = {
@@ -105,6 +106,9 @@ function wireButtons() {
   document
     .getElementById("btn-begin-questions")
     .addEventListener("click", () => {
+      if (!validateUserData()) {
+        return;
+      }
       updateUserMetaFromInputs();
       startTestFlow();
     });
@@ -188,8 +192,57 @@ function wireUserForm() {
     input.addEventListener("input", (event) => {
       state.userMeta[key] = event.target.value;
       saveProgressToLocalStorage();
+      setUserDataError("");
     });
   });
+}
+
+function setUserDataError(message = "", highlightKeys = []) {
+  if (elements.userDataError) {
+    elements.userDataError.textContent = message;
+  }
+  Object.entries(userInputs).forEach(([key, input]) => {
+    if (!input) return;
+    if (highlightKeys.includes(key)) {
+      input.classList.add("input-error");
+    } else {
+      input.classList.remove("input-error");
+    }
+  });
+}
+
+function validateUserData() {
+  const name = (userInputs.name?.value || "").trim();
+  const email = (userInputs.email?.value || "").trim();
+  const telegram = (userInputs.telegram?.value || "").trim();
+
+  if (!name || name.length < 2) {
+    setUserDataError("Введи ім’я (мінімум 2 символи).", ["name"]);
+    return false;
+  }
+
+  if (!email && !telegram) {
+    setUserDataError(
+      "Залиш контакт: email або Telegram, щоб ми могли надіслати результат.",
+      ["email", "telegram"]
+    );
+    return false;
+  }
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (email && !emailPattern.test(email)) {
+    setUserDataError("Перевір правильність email.", ["email"]);
+    return false;
+  }
+
+  const telegramPattern = /^@?[a-zA-Z0-9_]{5,}$/;
+  if (telegram && !telegramPattern.test(telegram)) {
+    setUserDataError("Телеграм має виглядати як @nickname (мінімум 5 символів).", ["telegram"]);
+    return false;
+  }
+
+  setUserDataError("");
+  return true;
 }
 
 function showScreen(screenId) {

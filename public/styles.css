@@ -1021,6 +1021,18 @@ textarea {
   resize: vertical;
 }
 
+.form-error {
+  margin: 6px 0 18px;
+  color: var(--accent);
+  font-size: 0.95rem;
+  min-height: 1.2em;
+}
+
+.input-error {
+  border-color: rgba(255, 45, 85, 0.6);
+  box-shadow: 0 0 0 1px rgba(255, 45, 85, 0.25);
+}
+
 .status-message {
   min-height: 18px;
   font-size: 0.9rem;
