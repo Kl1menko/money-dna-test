@@ -1,5 +1,5 @@
-import { ARCHETYPES } from "../data/archetypes.js";
-import { QUESTIONS } from "../data/questions.js";
+import { ARCHETYPES } from "./data/archetypes.js";
+import { QUESTIONS } from "./data/questions.js";
 
 const PROGRESS_KEY = "moneyDnaProgress";
 const TOTAL_QUESTIONS = QUESTIONS.length;
