@@ -13,6 +13,12 @@ const SAMPLE_SCORES = {
   hero: 21,
   unifier: 22
 };
+const SAMPLE_USER_META = {
+  name: "Демо Користувач",
+  email: "demo@moneydna.com",
+  telegram: "@moneydna_demo",
+  purpose: "Масштабування доходу через стабільні системи"
+};
 
 const state = {
   currentScreen: "screen-0-preview",
@@ -26,7 +32,8 @@ const state = {
     purpose: ""
   },
   scores: {},
-  resultId: null
+  resultId: null,
+  isDemoResult: false
 };
 
 const elements = {
@@ -43,7 +50,9 @@ const elements = {
   summaryAll: document.getElementById("summary-all"),
   detailsContainer: document.getElementById("details-container"),
   actionChecklist: document.getElementById("action-checklist"),
-  userDataError: document.getElementById("user-data-error")
+  userDataError: document.getElementById("user-data-error"),
+  deepDive: document.getElementById("dominant-deep-dive"),
+  roleModels: document.getElementById("archetype-role-models")
 };
 
 const userInputs = {
@@ -73,7 +82,10 @@ function initApp() {
 
   if (progressData && progressData.answers?.length < TOTAL_QUESTIONS) {
     promptResume(progressData.currentQuestionIndex || 0);
+    return;
   }
+
+  showDemoSummary();
 }
 
 function wireButtons() {
@@ -85,18 +97,26 @@ function wireButtons() {
     btn.addEventListener("click", () => {
       const target = btn.getAttribute("data-screen-target");
       if (!target) return;
-      if (
-        target === "screen-3-summary" &&
-        !state.answers.length &&
-        !Object.keys(state.scores).length
-      ) {
-        loadSampleResult();
-        renderSummary();
-        renderDetails();
+      if (target === "screen-3-summary") {
+        if (!state.answers.length && !Object.keys(state.scores).length) {
+          showDemoSummary();
+        } else {
+          renderSummary();
+          renderDetails();
+        }
       }
       showScreen(target);
     });
   });
+
+  const btnViewDemo = document.getElementById("btn-view-demo");
+  if (btnViewDemo) {
+    btnViewDemo.addEventListener("click", (event) => {
+      event.preventDefault();
+      showDemoSummary();
+      showScreen("screen-3-summary");
+    });
+  }
 
   document
     .getElementById("btn-instructions-next")
@@ -259,6 +279,9 @@ function startTestFlow() {
   state.randomizedQuestions = shuffleArray([...QUESTIONS]);
   state.currentQuestionIndex = 0;
   state.answers = [];
+  state.scores = {};
+  state.resultId = null;
+  state.isDemoResult = false;
   showScreen("screen-2-test");
   renderCurrentQuestion();
   saveProgressToLocalStorage();
@@ -316,7 +339,6 @@ function renderCurrentQuestion() {
 
       return `
         <article class="question-card">
-          <p class="question-hint">${ARCHETYPES[q.archetype]?.name || ""}</p>
           <h3>${q.text}</h3>
           <div class="scale-row">${scale}</div>
         </article>
@@ -481,6 +503,7 @@ function renderResultHero(top) {
     dominantEl.innerHTML = "";
     chartEl.innerHTML = "";
     descEl.innerHTML = "";
+    renderDominantDeepDive(null);
     return;
   }
 
@@ -541,6 +564,128 @@ function renderResultHero(top) {
       </dl>
     </article>
   `;
+  renderDominantDeepDive(dominantData);
+}
+
+function renderDominantDeepDive(archetypeData) {
+  if (!elements.deepDive || !elements.roleModels) return;
+  const deepDive = archetypeData?.deepDive;
+  if (!deepDive) {
+    elements.deepDive.innerHTML = "";
+    elements.deepDive.classList.add("hidden");
+    elements.roleModels.innerHTML = "";
+    elements.roleModels.classList.add("hidden");
+    return;
+  }
+
+  const sections = [];
+  if (deepDive.keyEnergy) {
+    sections.push(`
+      <section class="deep-dive__section">
+        <h5>${deepDive.keyEnergy.heading}</h5>
+        ${renderParagraphs(deepDive.keyEnergy.paragraphs)}
+      </section>
+    `);
+  }
+
+  if (deepDive.finance) {
+    const financeLists = [
+      buildListBlock("Сильні сторони", deepDive.finance.strengths),
+      buildListBlock("Як це виглядає", deepDive.finance.reality),
+      buildListBlock("Практичні ситуації", deepDive.finance.practical)
+    ]
+      .filter(Boolean)
+      .join("");
+    sections.push(`
+      <section class="deep-dive__section">
+        <h5>${deepDive.finance.heading}</h5>
+        ${deepDive.finance.intro ? `<p>${deepDive.finance.intro}</p>` : ""}
+        ${financeLists ? `<div class="deep-dive__lists">${financeLists}</div>` : ""}
+      </section>
+    `);
+  }
+
+  if (deepDive.shadow) {
+    const shadowLists = [
+      buildListBlock("Як проявляється тінь", deepDive.shadow.manifestations),
+      buildListBlock("Як тінь створює борги", deepDive.shadow.debtPatterns),
+      buildListBlock("Тіньові сценарії", deepDive.shadow.practical),
+      buildListBlock("Як зцілити тінь", deepDive.shadow.healing)
+    ]
+      .filter(Boolean)
+      .join("");
+    sections.push(`
+      <section class="deep-dive__section">
+        <h5>${deepDive.shadow.heading}</h5>
+        ${deepDive.shadow.description ? `<p>${deepDive.shadow.description}</p>` : ""}
+        ${shadowLists ? `<div class="deep-dive__lists">${shadowLists}</div>` : ""}
+      </section>
+    `);
+  }
+
+  if (deepDive.maturity) {
+    const maturityLists = [
+      buildListBlock("Які навички посилити", deepDive.maturity.skills),
+      buildListBlock("Дорожня карта зрілості", deepDive.maturity.roadmap)
+    ]
+      .filter(Boolean)
+      .join("");
+    sections.push(`
+      <section class="deep-dive__section">
+        <h5>${deepDive.maturity.heading}</h5>
+        ${deepDive.maturity.description ? `<p>${deepDive.maturity.description}</p>` : ""}
+        ${maturityLists ? `<div class="deep-dive__lists">${maturityLists}</div>` : ""}
+      </section>
+    `);
+  }
+
+  if (deepDive.potential) {
+    sections.push(`
+      <section class="deep-dive__section">
+        <h5>${deepDive.potential.heading}</h5>
+        ${deepDive.potential.description ? `<p>${deepDive.potential.description}</p>` : ""}
+        ${
+          deepDive.potential.keywords?.length
+            ? `<div class="deep-dive__chips">${deepDive.potential.keywords
+                .map((item) => `<span>${item}</span>`)
+                .join("")}</div>`
+            : ""
+        }
+      </section>
+    `);
+  }
+
+  elements.deepDive.innerHTML = `
+    <div class="deep-dive__heading">
+      <p class="result-badge">${deepDive.title || archetypeData.name}</p>
+      <h4>${archetypeData.name}: глибинний портрет</h4>
+      ${deepDive.intro ? `<p>${deepDive.intro}</p>` : ""}
+    </div>
+    ${sections.join("")}
+  `;
+  elements.deepDive.classList.remove("hidden");
+
+  if (deepDive.famous?.length) {
+    elements.roleModels.innerHTML = `
+      <h4>Відомі представники архетипу «${archetypeData.name}»</h4>
+      <ul class="role-models__list">
+        ${deepDive.famous
+          .map(
+            (person) => `
+              <li class="role-model-card">
+                <strong>${person.name}</strong>
+                <p>${person.note}</p>
+              </li>
+            `
+          )
+          .join("")}
+      </ul>
+    `;
+    elements.roleModels.classList.remove("hidden");
+  } else {
+    elements.roleModels.innerHTML = "";
+    elements.roleModels.classList.add("hidden");
+  }
 }
 
 function drawRadarChart(canvas, labels, values, maxScore) {
@@ -641,6 +786,23 @@ function drawRadarChart(canvas, labels, values, maxScore) {
   ctx.restore();
 }
 
+function renderParagraphs(paragraphs) {
+  if (!Array.isArray(paragraphs) || !paragraphs.length) return "";
+  return paragraphs.map((text) => `<p>${text}</p>`).join("");
+}
+
+function buildListBlock(title, items) {
+  if (!Array.isArray(items) || !items.length) return "";
+  return `
+    <div class="deep-dive__list">
+      <p>${title}</p>
+      <ul>
+        ${items.map((item) => `<li>${item}</li>`).join("")}
+      </ul>
+    </div>
+  `;
+}
+
 function renderDetails() {
   const top = getTopArchetypes(3);
   elements.detailsContainer.innerHTML = top
@@ -733,6 +895,7 @@ function loadProgressFromLocalStorage() {
       ...state.userMeta,
       ...(data.userMeta || {})
     };
+    state.isDemoResult = false;
     state.randomizedQuestions = (data.randomizedQuestions || [])
       .map((id) => QUESTIONS.find((q) => q.id === id))
       .filter(Boolean);
@@ -754,6 +917,7 @@ function resetTestState() {
   state.answers = [];
   state.scores = {};
   state.resultId = null;
+  state.isDemoResult = false;
 }
 
 function promptResume(currentIndex) {
@@ -777,8 +941,19 @@ function initStackedCardsAnimation() {
 
 function loadSampleResult() {
   state.scores = { ...SAMPLE_SCORES };
+  state.answers = buildSampleAnswers();
+  state.userMeta = {
+    ...state.userMeta,
+    ...SAMPLE_USER_META
+  };
   state.resultId = null;
-  state.answers = [];
+  state.isDemoResult = true;
+}
+
+function showDemoSummary() {
+  loadSampleResult();
+  renderSummary();
+  renderDetails();
 }
 
 function updateUserMetaFromInputs() {
@@ -803,6 +978,7 @@ function shuffleArray(arr) {
 
 async function persistResults() {
   if (state.resultId) return state.resultId;
+  if (state.isDemoResult) return null;
   if (!state.answers.length) return null;
   try {
     const payload = {
@@ -913,6 +1089,7 @@ async function fetchResultById(id) {
         purpose: data.result.purpose || ""
       };
       state.resultId = data.result.id;
+      state.isDemoResult = false;
       updateInputsFromState();
       renderSummary();
       renderDetails();
@@ -946,3 +1123,12 @@ const ARCHETYPE_COLORS = {
   hero: "#ffd43b",
   unifier: "#38bdf8"
 };
+
+function buildSampleAnswers() {
+  if (!QUESTIONS.length) return [];
+  return QUESTIONS.map((question, index) => ({
+    questionId: question.id,
+    archetype: question.archetype,
+    value: ((index % 5) + 1)
+  }));
+}
