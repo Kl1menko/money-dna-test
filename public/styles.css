@@ -119,6 +119,23 @@ body::after {
   .details-header .btn-secondary {
     width: 100%;
   }
+
+  .promo-section h2,
+  .promo-section h3,
+  .promo-section h4 {
+    margin-bottom: 8px;
+  }
+
+  .promo-section p,
+  .hero-subtitle,
+  .feature-card p,
+  .flow-step p,
+  .card-grid p,
+  .audience-list li,
+  .diff-section p {
+    margin: 6px 0 10px;
+    line-height: 1.5;
+  }
 }
 
 .hero-screen {
