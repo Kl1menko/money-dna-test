@@ -177,7 +177,7 @@
               </p>
             </article>
             <article class="feature-card">
-              <h3>(Опційно) Результат на email / в Telegram</h3>
+              <h3>Результат в Telegram</h3>
               <p>
                 Повернись до свого профілю, перечитай і працюй з ним як з
                 персональним гідом.
@@ -305,6 +305,13 @@
             </p>
           </div>
         </section>
+
+        <section class="dev-shortcut">
+          <p class="dev-shortcut__label">Технічна кнопка для швидкої перевірки</p>
+          <button class="btn-secondary" data-screen-target="screen-3-summary">
+            Перейти до демо результатів
+          </button>
+        </section>
       </section>
 
       <section id="screen-1-instructions" class="screen hidden">
@@ -387,11 +394,23 @@
           <button id="btn-request-report" class="btn-secondary">
             Отримати PDF у Telegram
           </button>
+          <button id="btn-share-telegram" class="btn-secondary">
+            Поділитися результатом у Telegram
+          </button>
         </div>
       </section>
 
       <section id="screen-4-details" class="screen hidden">
-        <h2>Детальний розбір твоїх архетипів</h2>
+        <div class="details-header">
+          <h2>Детальний розбір твоїх архетипів</h2>
+          <button
+            id="btn-back-to-summary"
+            class="btn-secondary"
+            data-screen-target="screen-3-summary"
+          >
+            Повернутися до результатів
+          </button>
+        </div>
         <div id="details-container" class="details-list"></div>
         <div class="next-steps">
           <h3>Що робити далі?</h3>
@@ -453,7 +472,7 @@
 
     <button
       id="back-to-top"
-      class="btn-back-top hidden"
+      class="btn-back-top"
       aria-label="Повернутись нагору"
     >
       ↑

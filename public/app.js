@@ -2,6 +2,16 @@ const PROGRESS_KEY = "moneyDnaProgress";
 const ARCHETYPES = window.__APP_ARCHETYPES || {};
 const QUESTIONS = window.__APP_QUESTIONS || [];
 const TOTAL_QUESTIONS = QUESTIONS.length;
+const ARCHETYPE_COLORS = {
+  king: "#ffb347",
+  caregiver: "#ffa8a8",
+  lover: "#ff7eb6",
+  magician: "#9f7aea",
+  rebel: "#ff6b6b",
+  guardian: "#4c6ef5",
+  hero: "#ffd43b",
+  unifier: "#38bdf8"
+};
 
 const SAMPLE_SCORES = {
   king: 18,
@@ -138,6 +148,12 @@ function wireButtons() {
     .getElementById("btn-request-report")
     .addEventListener("click", () => {
       handleReportRequest();
+    });
+
+  document
+    .getElementById("btn-share-telegram")
+    .addEventListener("click", () => {
+      shareResultToTelegram();
     });
 
   document
@@ -1019,7 +1035,27 @@ async function handleReportRequest() {
   }
 }
 
-async function sendReportRequest(_email, telegram) {
+async function shareResultToTelegram() {
+  if (state.isDemoResult || !state.answers.length) {
+    window.alert("Спершу заверши тест, щоб поділитися результатом.");
+    return;
+  }
+  if (!state.resultId) {
+    await persistResults();
+  }
+  if (!state.resultId) {
+    window.alert("Не вдалося згенерувати посилання. Спробуй ще раз.");
+    return;
+  }
+  const shareUrl = buildShareLink(state.resultId);
+  const shareText = buildTelegramShareText();
+  const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(
+    shareUrl
+  )}&text=${encodeURIComponent(shareText)}`;
+  window.open(telegramUrl, "_blank", "noopener");
+}
+
+async function sendReportRequest(email, telegram) {
   if (!state.resultId) {
     elements.contactStatus.textContent =
       "Спершу заверши тест, щоб ми згенерували результат.";
@@ -1059,6 +1095,29 @@ function openContactModal() {
 function closeContactModal() {
   elements.contactModal.classList.add("hidden");
   elements.contactStatus.textContent = "";
+}
+
+function buildShareLink(resultId) {
+  try {
+    const url = new URL(window.location.href);
+    url.searchParams.set("id", resultId);
+    url.hash = "";
+    return url.toString();
+  } catch (_err) {
+    return `${window.location.origin}?id=${resultId}`;
+  }
+}
+
+function buildTelegramShareText() {
+  const top = getTopArchetypes(3);
+  if (!top.length) return "Мій результат тесту «Грошовий ДНК».";
+  const list = top
+    .map((item, idx) => {
+      const label = ARCHETYPES[item.key]?.name || item.key;
+      return `${idx + 1}. ${label} — ${item.score} балів`;
+    })
+    .join("\n");
+  return `Мій Грошовий ДНК-профіль:\n${list}\nПовний розбір за посиланням:`;
 }
 
 async function fetchResultById(id) {
@@ -1103,17 +1162,6 @@ elements.resumeModal.addEventListener("click", (event) => {
     hideResumeModal();
   }
 });
-const ARCHETYPE_COLORS = {
-  king: "#ffb347",
-  caregiver: "#ffa8a8",
-  lover: "#ff7eb6",
-  magician: "#9f7aea",
-  rebel: "#ff6b6b",
-  guardian: "#4c6ef5",
-  hero: "#ffd43b",
-  unifier: "#38bdf8"
-};
-
 function buildSampleAnswers() {
   if (!QUESTIONS.length) return [];
   return QUESTIONS.map((question, index) => ({

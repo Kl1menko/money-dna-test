@@ -1036,6 +1036,19 @@ button[data-start-test] {
   margin-top: 24px;
 }
 
+.details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.details-header h2 {
+  margin: 0;
+}
+
 .details-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -1136,6 +1149,24 @@ button[data-start-test] {
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 12px;
+}
+
+.dev-shortcut {
+  margin-top: 32px;
+  padding: 20px 24px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px dashed rgba(7, 24, 94, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dev-shortcut__label {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--muted-strong);
 }
 
 .modal {
