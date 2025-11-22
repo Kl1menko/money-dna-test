@@ -1562,3 +1562,47 @@ textarea {
     flex-direction: column-reverse;
   }
 }
+.site-footer {
+  max-width: 1520px;
+  margin: 0 auto 48px;
+  padding: 32px 40px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 32px;
+  border: 1px solid rgba(7, 24, 94, 0.08);
+  box-shadow: 0 20px 40px rgba(15, 38, 145, 0.12);
+  position: relative;
+  z-index: 1;
+}
+
+.footer-person {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-person img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(7, 24, 94, 0.12);
+}
+
+.footer-person--developer img {
+  border-radius: 0;
+}
+
+.footer-person strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--muted-strong);
+}
+
+.footer-person p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
