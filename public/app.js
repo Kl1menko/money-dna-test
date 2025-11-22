@@ -671,12 +671,14 @@ function renderDominantDeepDive(archetypeData) {
       <ul class="role-models__list">
         ${deepDive.famous
           .map(
-            (person) => `
-              <li class="role-model-card">
-                <strong>${person.name}</strong>
-                <p>${person.note}</p>
-              </li>
-            `
+            (person) => {
+          return `
+            <li class="role-model-card">
+              <strong>${person.name}</strong>
+              <p>${person.note}</p>
+            </li>
+          `;
+        }
           )
           .join("")}
       </ul>
@@ -802,6 +804,7 @@ function buildListBlock(title, items) {
     </div>
   `;
 }
+
 
 function renderDetails() {
   const top = getTopArchetypes(3);
