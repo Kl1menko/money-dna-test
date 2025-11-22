@@ -6,7 +6,7 @@
     <title>Грошовий ДНК: тест фінансових архетипів</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body>
+  <body class="page-with-glow">
     <div id="app">
       <section id="screen-0-preview" class="screen hero-screen">
         <header class="hero-header">
@@ -379,10 +379,10 @@
           <div id="result-dominant" class="result-dominant"></div>
           <div id="result-chart" class="result-chart"></div>
         </div>
+        <div id="summary-top3" class="results-summary"></div>
         <div id="result-description" class="result-description"></div>
         <div id="dominant-deep-dive" class="deep-dive hidden"></div>
         <div id="archetype-role-models" class="role-models hidden"></div>
-        <div id="summary-top3" class="results-summary"></div>
         <div>
           <h3>Усі архетипи</h3>
           <div id="summary-all" class="archetype-list"></div>
@@ -409,6 +409,15 @@
           </button>
         </div>
         <div id="details-container" class="details-list"></div>
+        <div class="details-extra">
+          <p class="details-extra__hint">
+            Хочеш заглибитись? Переглянь повний розбір для кожного з трьох архетипів.
+          </p>
+          <button id="btn-show-all-deep-dive" class="btn-primary">
+            Дивитись розбір для всіх трьох архетипів
+          </button>
+        </div>
+        <div id="full-deep-dive" class="deep-dive-all hidden"></div>
         <div class="next-steps">
           <h3>Що робити далі?</h3>
           <ul id="action-checklist"></ul>

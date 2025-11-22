@@ -63,7 +63,8 @@ const elements = {
   userDataError: document.getElementById("user-data-error"),
   deepDive: document.getElementById("dominant-deep-dive"),
   roleModels: document.getElementById("archetype-role-models"),
-  backToTop: document.getElementById("back-to-top")
+  backToTop: document.getElementById("back-to-top"),
+  fullDeepDive: document.getElementById("full-deep-dive")
 };
 
 const userInputs = {
@@ -156,6 +157,15 @@ function wireButtons() {
     .getElementById("btn-share-telegram")
     .addEventListener("click", () => {
       shareResultToTelegram();
+    });
+
+  document
+    .getElementById("btn-show-all-deep-dive")
+    .addEventListener("click", () => {
+      const ok = renderFullDeepDive();
+      if (!ok) {
+        window.alert("Спершу заверши тест, щоб побачити повний розбір.");
+      }
     });
 
   document
@@ -813,6 +823,18 @@ function buildListBlock(title, items) {
   `;
 }
 
+function buildSimpleList(title, items) {
+  if (!Array.isArray(items) || !items.length) return "";
+  return `
+    <div class="deep-dive-card__list">
+      <strong>${title}</strong>
+      <ul>
+        ${items.map((item) => `<li>${item}</li>`).join("")}
+      </ul>
+    </div>
+  `;
+}
+
 
 function renderDetails() {
   const top = getTopArchetypes(3);
@@ -856,6 +878,133 @@ function renderDetails() {
   elements.actionChecklist.innerHTML = checklist
     .map((tip) => `<li>${tip}</li>`)
     .join("");
+  if (elements.fullDeepDive) {
+    elements.fullDeepDive.innerHTML = "";
+    elements.fullDeepDive.classList.add("hidden");
+  }
+}
+
+function renderFullDeepDive() {
+  if (!elements.fullDeepDive) return false;
+  const top = getTopArchetypes(3);
+  if (!top.length) {
+    elements.fullDeepDive.innerHTML =
+      "<p>Спершу заверши тест, щоб побачити розбір.</p>";
+    elements.fullDeepDive.classList.remove("hidden");
+    return false;
+  }
+  const cards = top
+    .map(({ key, score }, index) =>
+      buildDeepDiveCard(ARCHETYPES[key], score, index)
+    )
+    .filter(Boolean)
+    .join("");
+  if (!cards) {
+    elements.fullDeepDive.innerHTML =
+      "<p>Для цих архетипів поки немає детального розбору.</p>";
+    elements.fullDeepDive.classList.remove("hidden");
+    return false;
+  }
+  elements.fullDeepDive.innerHTML = cards;
+  elements.fullDeepDive.classList.remove("hidden");
+  return true;
+}
+
+function buildDeepDiveCard(archetypeData, score, index) {
+  if (!archetypeData) return "";
+  const deepDive = archetypeData.deepDive;
+  const sections = [];
+
+  if (deepDive?.keyEnergy) {
+    sections.push(`
+      <section>
+        <strong>${deepDive.keyEnergy.heading}</strong>
+        ${renderParagraphs(deepDive.keyEnergy.paragraphs)}
+      </section>
+    `);
+  }
+
+  if (deepDive?.finance) {
+    sections.push(`
+      <section>
+        <strong>${deepDive.finance.heading}</strong>
+        ${deepDive.finance.intro ? `<p>${deepDive.finance.intro}</p>` : ""}
+        ${buildSimpleList("Сильні сторони", deepDive.finance.strengths)}
+        ${buildSimpleList("Як це виглядає", deepDive.finance.reality)}
+        ${buildSimpleList("Практика", deepDive.finance.practical)}
+      </section>
+    `);
+  }
+
+  if (deepDive?.shadow) {
+    sections.push(`
+      <section>
+        <strong>${deepDive.shadow.heading}</strong>
+        ${deepDive.shadow.description ? `<p>${deepDive.shadow.description}</p>` : ""}
+        ${buildSimpleList("Тінь проявляється", deepDive.shadow.manifestations)}
+        ${buildSimpleList("Що викликає борги", deepDive.shadow.debtPatterns)}
+        ${buildSimpleList("Як діяти", deepDive.shadow.healing)}
+      </section>
+    `);
+  }
+
+  if (deepDive?.maturity) {
+    sections.push(`
+      <section>
+        <strong>${deepDive.maturity.heading}</strong>
+        ${deepDive.maturity.description ? `<p>${deepDive.maturity.description}</p>` : ""}
+        ${buildSimpleList("Навички", deepDive.maturity.skills)}
+        ${buildSimpleList("Дорожня карта", deepDive.maturity.roadmap)}
+      </section>
+    `);
+  }
+
+  if (deepDive?.potential) {
+    sections.push(`
+      <section>
+        <strong>${deepDive.potential.heading}</strong>
+        ${deepDive.potential.description ? `<p>${deepDive.potential.description}</p>` : ""}
+        ${
+          deepDive.potential.keywords?.length
+            ? `<div class="deep-dive__chips">${deepDive.potential.keywords
+                .map((item) => `<span>${item}</span>`)
+                .join("")}</div>`
+            : ""
+        }
+      </section>
+    `);
+  }
+
+  const famous =
+    deepDive?.famous?.length
+      ? `
+    <div class="deep-dive-card__famous">
+      <strong>Відомі представники</strong>
+      <ul>
+        ${deepDive.famous.map((person) => `<li>${person.name} — ${person.note}</li>`).join("")}
+      </ul>
+    </div>
+  `
+      : "";
+
+  const fallback =
+    sections.length === 0
+      ? `<p>${archetypeData.shortDescription || "Цей архетип поки без детального розбору."}</p>`
+      : "";
+
+  return `
+    <article class="deep-dive-card">
+      <div class="deep-dive-card__meta">
+        <span class="result-badge">Архетип ${String(index + 1).padStart(2, "0")}</span>
+        <span>${archetypeData.name}</span>
+        <span>${score} балів</span>
+      </div>
+      <div class="deep-dive-card__sections">
+        ${sections.join("") || fallback}
+      </div>
+      ${famous}
+    </article>
+  `;
 }
 
 function buildNextSteps(top) {
