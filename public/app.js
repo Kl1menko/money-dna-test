@@ -715,7 +715,7 @@ function drawRadarChart(canvas, labels, values, maxScore) {
   const height = canvas.height;
   const centerX = width / 2;
   const centerY = height / 2;
-  const padding = 65;
+  const padding = 110;
   const radius = Math.min(width, height) / 2 - padding;
   const axes = labels.length;
   const levels = 5;
@@ -756,7 +756,7 @@ function drawRadarChart(canvas, labels, values, maxScore) {
     ctx.strokeStyle = "rgba(5, 6, 26, 0.12)";
     ctx.stroke();
 
-    const labelDistance = radius + 25;
+    const labelDistance = Math.min(radius + 10, Math.min(width, height) / 2 - 10);
     const labelX = Math.cos(angle) * labelDistance;
     const labelY = Math.sin(angle) * labelDistance;
     const text = `${ARCHETYPES[label].name} (${values[index]})`;
