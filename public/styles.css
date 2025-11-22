@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   --bg: #f7f8fc;
   --bg-muted: #ffffff;
@@ -75,13 +79,45 @@ body::after {
 
 @media (max-width: 640px) {
   #app {
-    padding: 32px 16px 48px;
+    padding: 24px 12px 48px;
   }
 
   .screen {
     border-radius: 28px;
-    padding: 28px 22px;
+    padding: 20px 12px;
     margin-bottom: 24px;
+  }
+
+  .hero-panel,
+  .promo-section,
+  .archetype-grid,
+  .cta-section,
+  .audience-section,
+  .diff-section,
+  .flow-section,
+  .benefits-section {
+    padding: 18px 12px;
+  }
+
+  .feature-card,
+  .flow-step,
+  .archetype-mini,
+  .detail-item,
+  .role-model-card,
+  .details-header,
+  .summary-actions,
+  .cta-buttons {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .details-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .details-header .btn-secondary {
+    width: 100%;
   }
 }
 
@@ -329,6 +365,7 @@ button[data-start-test] {
   align-items: center;
   border: 1px solid rgba(10, 22, 74, 0.1);
   box-shadow: 0 15px 30px rgba(15, 38, 145, 0.15);
+  margin-bottom: 18px;
 }
 
 .hero-highlights {
@@ -863,12 +900,14 @@ button[data-start-test] {
 }
 
 .deep-dive__chips span {
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
-  background: rgba(10, 132, 255, 0.12);
-  color: var(--primary);
-  font-weight: 600;
-  font-size: 0.9rem;
+  background: linear-gradient(120deg, rgba(10, 132, 255, 0.2), rgba(90, 200, 250, 0.25));
+  color: var(--primary-strong);
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
 }
 
 .role-models {
@@ -1291,8 +1330,10 @@ textarea {
   }
 
   .hero-pill {
-    font-size: 0.75rem;
-    letter-spacing: 0.2em;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    padding: 6px 14px;
+    text-align: center;
   }
 
   .hero-panel {

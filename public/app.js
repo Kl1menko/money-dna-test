@@ -153,12 +153,6 @@ function wireButtons() {
     });
 
   document
-    .getElementById("btn-request-report")
-    .addEventListener("click", () => {
-      handleReportRequest();
-    });
-
-  document
     .getElementById("btn-share-telegram")
     .addEventListener("click", () => {
       shareResultToTelegram();
@@ -1026,20 +1020,6 @@ async function persistResults() {
   } catch (err) {
     console.error("Помилка збереження результату", err);
     return null;
-  }
-}
-
-async function handleReportRequest() {
-  const telegram = state.userMeta.telegram?.trim();
-  if (!state.resultId) {
-    await persistResults();
-  }
-  if (telegram) {
-    sendReportRequest(null, telegram);
-  } else {
-    elements.contactStatus.textContent = "";
-    document.getElementById("modal-telegram").value = "";
-    openContactModal();
   }
 }
 
