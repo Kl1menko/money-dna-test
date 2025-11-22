@@ -279,6 +279,7 @@ function showScreen(screenId) {
   if (target) {
     target.classList.remove("hidden");
     state.currentScreen = screenId;
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 }
 
