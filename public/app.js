@@ -83,11 +83,19 @@ function initApp() {
   const progressData = loadProgressFromLocalStorage();
   const urlParams = new URLSearchParams(window.location.search);
   const sharedResultId = urlParams.get("id");
+  const showDemoResult =
+    urlParams.get("demo") === "1" || urlParams.get("demo") === "true";
 
   initStackedCardsAnimation();
 
   if (sharedResultId) {
     fetchResultById(sharedResultId);
+    return;
+  }
+
+  if (showDemoResult) {
+    showDemoSummary();
+    showScreen("screen-3-summary");
     return;
   }
 
@@ -1036,18 +1044,28 @@ async function handleReportRequest() {
 }
 
 async function shareResultToTelegram() {
-  if (state.isDemoResult || !state.answers.length) {
+  if (!state.answers.length) {
     window.alert("Спершу заверши тест, щоб поділитися результатом.");
     return;
   }
-  if (!state.resultId) {
-    await persistResults();
+
+  let shareUrl = "";
+  if (state.isDemoResult) {
+    shareUrl = buildShareLink(null, {
+      demo: "1",
+      screen: "screen-3-summary"
+    });
+  } else {
+    if (!state.resultId) {
+      await persistResults();
+    }
+    if (!state.resultId) {
+      window.alert("Не вдалося згенерувати посилання. Спробуй ще раз.");
+      return;
+    }
+    shareUrl = buildShareLink(state.resultId);
   }
-  if (!state.resultId) {
-    window.alert("Не вдалося згенерувати посилання. Спробуй ще раз.");
-    return;
-  }
-  const shareUrl = buildShareLink(state.resultId);
+
   const shareText = buildTelegramShareText();
   const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(
     shareUrl
@@ -1097,14 +1115,31 @@ function closeContactModal() {
   elements.contactStatus.textContent = "";
 }
 
-function buildShareLink(resultId) {
+function buildShareLink(resultId, extraParams = {}) {
   try {
     const url = new URL(window.location.href);
-    url.searchParams.set("id", resultId);
+    if (resultId) {
+      url.searchParams.set("id", resultId);
+    } else {
+      url.searchParams.delete("id");
+    }
+    Object.entries(extraParams || {}).forEach(([key, value]) => {
+      if (value == null) {
+        url.searchParams.delete(key);
+      } else {
+        url.searchParams.set(key, value);
+      }
+    });
     url.hash = "";
     return url.toString();
   } catch (_err) {
-    return `${window.location.origin}?id=${resultId}`;
+    if (resultId) {
+      return `${window.location.origin}?id=${resultId}`;
+    }
+    const query = new URLSearchParams(extraParams || {}).toString();
+    return query
+      ? `${window.location.origin}?${query}`
+      : window.location.origin;
   }
 }
 
