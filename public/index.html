@@ -299,9 +299,6 @@
             <button class="btn-accent hero-start" data-start-test>
               Пройти тест “Грошовий ДНК”
             </button>
-            <button id="btn-view-demo" type="button" class="btn-secondary">
-              Подивитися приклад результату
-            </button>
             <p class="cta-hint">
               Результат одразу на екрані · Можливість надіслати профіль на email
               або в Telegram
@@ -337,16 +334,8 @@
             <input type="text" id="input-name" placeholder="Олена" />
           </label>
           <label>
-            Email
-            <input
-              type="email"
-              id="input-email"
-              placeholder="you@example.com"
-            />
-          </label>
-          <label>
             Telegram
-            <input type="text" id="input-telegram" placeholder="@користувач" />
+            <input type="text" id="input-telegram" placeholder="@user" />
           </label>
           <label>
             Для чого тобі гроші зараз?
@@ -396,7 +385,7 @@
             Подивитися детальний розбір
           </button>
           <button id="btn-request-report" class="btn-secondary">
-            Отримати PDF на email / у Telegram
+            Отримати PDF у Telegram
           </button>
         </div>
       </section>
@@ -449,10 +438,6 @@
       <div class="modal-content">
         <h3>Куди надіслати PDF?</h3>
         <label>
-          Email
-          <input type="email" id="modal-email" placeholder="you@example.com" />
-        </label>
-        <label>
           Telegram
           <input type="text" id="modal-telegram" placeholder="@користувач" />
         </label>
@@ -465,6 +450,14 @@
         <p id="contact-modal-status" class="status-message"></p>
       </div>
     </div>
+
+    <button
+      id="back-to-top"
+      class="btn-back-top hidden"
+      aria-label="Повернутись нагору"
+    >
+      ↑
+    </button>
 
     <script src="./data/archetypes.js"></script>
     <script src="./data/questions.js"></script>

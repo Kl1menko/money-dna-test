@@ -52,12 +52,12 @@ const elements = {
   actionChecklist: document.getElementById("action-checklist"),
   userDataError: document.getElementById("user-data-error"),
   deepDive: document.getElementById("dominant-deep-dive"),
-  roleModels: document.getElementById("archetype-role-models")
+  roleModels: document.getElementById("archetype-role-models"),
+  backToTop: document.getElementById("back-to-top")
 };
 
 const userInputs = {
   name: document.getElementById("input-name"),
-  email: document.getElementById("input-email"),
   telegram: document.getElementById("input-telegram"),
   purpose: document.getElementById("input-purpose")
 };
@@ -68,6 +68,7 @@ function initApp() {
   wireButtons();
   wireQuestionInteractions();
   wireUserForm();
+  initBackToTop();
 
   const progressData = loadProgressFromLocalStorage();
   const urlParams = new URLSearchParams(window.location.search);
@@ -108,15 +109,6 @@ function wireButtons() {
       showScreen(target);
     });
   });
-
-  const btnViewDemo = document.getElementById("btn-view-demo");
-  if (btnViewDemo) {
-    btnViewDemo.addEventListener("click", (event) => {
-      event.preventDefault();
-      showDemoSummary();
-      showScreen("screen-3-summary");
-    });
-  }
 
   document
     .getElementById("btn-instructions-next")
@@ -173,17 +165,15 @@ function wireButtons() {
   document
     .getElementById("btn-contact-submit")
     .addEventListener("click", () => {
-      const email = document.getElementById("modal-email").value.trim();
       const telegram = document.getElementById("modal-telegram").value.trim();
-      if (!email && !telegram) {
+      if (!telegram) {
         elements.contactStatus.textContent =
-          "Вкажи email або Telegram, щоб ми знали, куди надсилати.";
+          "Вкажи Telegram, щоб ми знали, куди надсилати.";
         return;
       }
-      state.userMeta.email = email || state.userMeta.email;
       state.userMeta.telegram = telegram || state.userMeta.telegram;
       updateInputsFromState();
-      sendReportRequest(email || state.userMeta.email, telegram || state.userMeta.telegram).then(
+      sendReportRequest(null, telegram || state.userMeta.telegram).then(
         (success) => {
           if (success) {
             closeContactModal();
@@ -192,6 +182,20 @@ function wireButtons() {
       );
     });
 
+}
+
+function initBackToTop() {
+  if (!elements.backToTop) return;
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 150) {
+      elements.backToTop.classList.add("visible");
+    } else {
+      elements.backToTop.classList.remove("visible");
+    }
+  });
+  elements.backToTop.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 }
 
 function wireQuestionInteractions() {
@@ -232,25 +236,10 @@ function setUserDataError(message = "", highlightKeys = []) {
 
 function validateUserData() {
   const name = (userInputs.name?.value || "").trim();
-  const email = (userInputs.email?.value || "").trim();
   const telegram = (userInputs.telegram?.value || "").trim();
 
   if (!name || name.length < 2) {
     setUserDataError("Введи ім’я (мінімум 2 символи).", ["name"]);
-    return false;
-  }
-
-  if (!email && !telegram) {
-    setUserDataError(
-      "Залиш контакт: email або Telegram, щоб ми могли надіслати результат.",
-      ["email", "telegram"]
-    );
-    return false;
-  }
-
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (email && !emailPattern.test(email)) {
-    setUserDataError("Перевір правильність email.", ["email"]);
     return false;
   }
 
@@ -1017,22 +1006,20 @@ async function persistResults() {
 }
 
 async function handleReportRequest() {
-  const email = state.userMeta.email?.trim();
   const telegram = state.userMeta.telegram?.trim();
   if (!state.resultId) {
     await persistResults();
   }
-  if (email || telegram) {
-    sendReportRequest(email, telegram);
+  if (telegram) {
+    sendReportRequest(null, telegram);
   } else {
     elements.contactStatus.textContent = "";
-    document.getElementById("modal-email").value = "";
     document.getElementById("modal-telegram").value = "";
     openContactModal();
   }
 }
 
-async function sendReportRequest(email, telegram) {
+async function sendReportRequest(_email, telegram) {
   if (!state.resultId) {
     elements.contactStatus.textContent =
       "Спершу заверши тест, щоб ми згенерували результат.";
