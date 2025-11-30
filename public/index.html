@@ -415,6 +415,12 @@
             Поділитися результатом у Telegram
           </button>
         </div>
+        <div class="answers-preview">
+          <p>Хочеш пригадати, як відповідав(ла) на твердження?</p>
+          <button id="btn-view-answers" class="btn-secondary">
+            Переглянути відповіді
+          </button>
+        </div>
       </section>
 
       <section id="screen-4-details" class="screen hidden">
@@ -462,6 +468,23 @@
           </div>
         </div>
       </section>
+    </div>
+
+    <div class="tech-access">
+      <button id="btn-tech-demo" class="btn-secondary">Технічний перегляд результатів (демо)</button>
+    </div>
+
+    <div id="answers-modal" class="modal hidden">
+      <div class="modal-content modal-large">
+        <h3>Твої відповіді</h3>
+        <p class="modal-subtext">
+          Порядок питань відповідає тесту. 1 — «Зовсім не про мене», 5 — «Це я на 100%».
+        </p>
+        <div id="answers-list" class="answers-list"></div>
+        <div class="modal-actions">
+          <button id="btn-answers-close" class="btn-primary">Закрити</button>
+        </div>
+      </div>
     </div>
 
     <div id="resume-modal" class="modal hidden">

@@ -2,6 +2,13 @@ const PROGRESS_KEY = "moneyDnaProgress";
 const ARCHETYPES = window.__APP_ARCHETYPES || {};
 const QUESTIONS = window.__APP_QUESTIONS || [];
 const TOTAL_QUESTIONS = QUESTIONS.length;
+const ANSWER_SCALE = [
+  { value: 1, label: "Зовсім не про мене" },
+  { value: 2, label: "Рідко проявляється" },
+  { value: 3, label: "Іноді, залежно від обставин" },
+  { value: 4, label: "Часто, природно для мене" },
+  { value: 5, label: "Це я на 100%" }
+];
 const ARCHETYPE_COLORS = {
   king: "#ffb347",
   caregiver: "#ffa8a8",
@@ -64,7 +71,9 @@ const elements = {
   deepDive: document.getElementById("dominant-deep-dive"),
   roleModels: document.getElementById("archetype-role-models"),
   backToTop: document.getElementById("back-to-top"),
-  fullDeepDive: document.getElementById("full-deep-dive")
+  fullDeepDive: document.getElementById("full-deep-dive"),
+  answersModal: document.getElementById("answers-modal"),
+  answersList: document.getElementById("answers-list")
 };
 
 const userInputs = {
@@ -112,6 +121,24 @@ function wireButtons() {
   document.querySelectorAll("[data-start-test]").forEach((btn) => {
     btn.addEventListener("click", () => showScreen("screen-1-instructions"));
   });
+
+  const techDemoBtn = document.getElementById("btn-tech-demo");
+  if (techDemoBtn) {
+    techDemoBtn.addEventListener("click", () => {
+      showDemoSummary();
+      showScreen("screen-3-summary");
+    });
+  }
+
+  const viewAnswersBtn = document.getElementById("btn-view-answers");
+  if (viewAnswersBtn) {
+    viewAnswersBtn.addEventListener("click", () => openAnswersModal());
+  }
+
+  const closeAnswersBtn = document.getElementById("btn-answers-close");
+  if (closeAnswersBtn) {
+    closeAnswersBtn.addEventListener("click", () => closeAnswersModal());
+  }
 
   document.querySelectorAll("[data-screen-target]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -327,18 +354,10 @@ function renderCurrentQuestion() {
   elements.progress.textContent = `${currentNumber} / ${total}`;
   elements.archetypeHint.textContent = "";
 
-  const options = [
-    { value: 1, label: "Зовсім не про мене" },
-    { value: 2, label: "Рідко проявляється" },
-    { value: 3, label: "Іноді, залежно від обставин" },
-    { value: 4, label: "Часто, природно для мене" },
-    { value: 5, label: "Це я на 100%" }
-  ];
-
   const cards = questionsSlice
     .map((q) => {
       const answer = state.answers.find((a) => a.questionId === q.id);
-      const scale = options
+      const scale = ANSWER_SCALE
         .map(
           (opt) => `
             <label class="scale-option">
@@ -806,6 +825,11 @@ function drawRadarChart(canvas, labels, values, maxScore) {
   ctx.restore();
 }
 
+function getScaleLabel(value) {
+  const option = ANSWER_SCALE.find((item) => item.value === Number(value));
+  return option?.label || "";
+}
+
 function renderParagraphs(paragraphs) {
   if (!Array.isArray(paragraphs) || !paragraphs.length) return "";
   return paragraphs.map((text) => `<p>${text}</p>`).join("");
@@ -1031,6 +1055,44 @@ function buildNextSteps(top) {
   }
   tips.push("Зроби ревізію фінансів через 30 днів і порівняй прогрес.");
   return tips.slice(0, 5);
+}
+
+function openAnswersModal() {
+  renderAnswersModal();
+  elements.answersModal?.classList.remove("hidden");
+}
+
+function closeAnswersModal() {
+  elements.answersModal?.classList.add("hidden");
+}
+
+function renderAnswersModal() {
+  if (!elements.answersList) return;
+  if (!state.answers.length) {
+    elements.answersList.innerHTML =
+      "<p>Спершу заверши тест, щоб побачити свої відповіді.</p>";
+    return;
+  }
+
+  const items = [...state.answers]
+    .sort((a, b) => a.questionId - b.questionId)
+    .map((answer) => {
+      const question = QUESTIONS.find((q) => q.id === answer.questionId);
+      const label = getScaleLabel(answer.value);
+      return `
+        <article class="answer-item">
+          <div class="answer-item__meta">
+            <span>Питання ${answer.questionId}</span>
+            <span class="answer-item__value">${answer.value}/5</span>
+          </div>
+          <strong>${question?.text || "Питання видалено"}</strong>
+          <span>${label}</span>
+        </article>
+      `;
+    })
+    .join("");
+
+  elements.answersList.innerHTML = items;
 }
 
 function saveProgressToLocalStorage() {
@@ -1321,12 +1383,23 @@ function closeContactModalIfNeeded(event) {
   }
 }
 
-elements.contactModal.addEventListener("click", closeContactModalIfNeeded);
-elements.resumeModal.addEventListener("click", (event) => {
-  if (event.target === elements.resumeModal) {
-    hideResumeModal();
-  }
-});
+if (elements.contactModal) {
+  elements.contactModal.addEventListener("click", closeContactModalIfNeeded);
+}
+if (elements.resumeModal) {
+  elements.resumeModal.addEventListener("click", (event) => {
+    if (event.target === elements.resumeModal) {
+      hideResumeModal();
+    }
+  });
+}
+if (elements.answersModal) {
+  elements.answersModal.addEventListener("click", (event) => {
+    if (event.target === elements.answersModal) {
+      closeAnswersModal();
+    }
+  });
+}
 function buildSampleAnswers() {
   if (!QUESTIONS.length) return [];
   return QUESTIONS.map((question, index) => ({
