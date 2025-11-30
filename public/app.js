@@ -122,14 +122,6 @@ function wireButtons() {
     btn.addEventListener("click", () => showScreen("screen-1-instructions"));
   });
 
-  const techDemoBtn = document.getElementById("btn-tech-demo");
-  if (techDemoBtn) {
-    techDemoBtn.addEventListener("click", () => {
-      showDemoSummary();
-      showScreen("screen-3-summary");
-    });
-  }
-
   const viewAnswersBtn = document.getElementById("btn-view-answers");
   if (viewAnswersBtn) {
     viewAnswersBtn.addEventListener("click", () => openAnswersModal());

@@ -1144,7 +1144,6 @@ button[data-start-test] {
 .tech-access:hover {
   opacity: 1;
 }
-
 .results-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -1756,4 +1755,18 @@ textarea {
   margin: 4px 0 0;
   color: var(--muted);
   font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .footer-person {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-developer-logo {
+    width: 140px;
+    max-width: 60vw;
+    margin: 0 auto;
+  }
 }
