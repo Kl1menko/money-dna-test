@@ -61,8 +61,6 @@ const elements = {
   btnPrev: document.getElementById("btn-question-prev"),
   resumeModal: document.getElementById("resume-modal"),
   resumeMessage: document.getElementById("resume-message"),
-  contactModal: document.getElementById("contact-modal"),
-  contactStatus: document.getElementById("contact-modal-status"),
   summaryTop3: document.getElementById("summary-top3"),
   summaryAll: document.getElementById("summary-all"),
   detailsContainer: document.getElementById("details-container"),
@@ -202,33 +200,6 @@ function wireButtons() {
       resetTestState();
       showScreen("screen-0-preview");
     });
-
-  document
-    .getElementById("btn-contact-cancel")
-    .addEventListener("click", () => {
-      closeContactModal();
-    });
-
-  document
-    .getElementById("btn-contact-submit")
-    .addEventListener("click", () => {
-      const telegram = document.getElementById("modal-telegram").value.trim();
-      if (!telegram) {
-        elements.contactStatus.textContent =
-          "Вкажи Telegram, щоб ми знали, куди надсилати.";
-        return;
-      }
-      state.userMeta.telegram = telegram || state.userMeta.telegram;
-      updateInputsFromState();
-      sendReportRequest(null, telegram || state.userMeta.telegram).then(
-        (success) => {
-          if (success) {
-            closeContactModal();
-          }
-        }
-      );
-    });
-
 }
 
 function initBackToTop() {
@@ -1257,48 +1228,6 @@ async function shareResultToTelegram() {
   window.open(telegramUrl, "_blank", "noopener");
 }
 
-async function sendReportRequest(email, telegram) {
-  if (!state.resultId) {
-    elements.contactStatus.textContent =
-      "Спершу заверши тест, щоб ми згенерували результат.";
-    return false;
-  }
-  try {
-    const response = await fetch("/api/send-report", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        resultId: state.resultId,
-        email: email || null,
-        telegram: telegram || null
-      })
-    });
-    if (!response.ok) {
-      elements.contactStatus.textContent =
-        "Не вдалось надіслати. Спробуй ще раз пізніше.";
-      return false;
-    }
-    elements.contactStatus.textContent = "Готово! Перевір скриньку або Telegram.";
-    return true;
-  } catch (err) {
-    console.error("Помилка відправки", err);
-    elements.contactStatus.textContent =
-      "Не вдалось надіслати. Спробуй ще раз пізніше.";
-    return false;
-  }
-}
-
-function openContactModal() {
-  elements.contactModal.classList.remove("hidden");
-}
-
-function closeContactModal() {
-  elements.contactModal.classList.add("hidden");
-  elements.contactStatus.textContent = "";
-}
-
 function buildShareLink(resultId, extraParams = {}) {
   try {
     const url = new URL(window.location.href);
@@ -1369,15 +1298,6 @@ async function fetchResultById(id) {
   }
 }
 
-function closeContactModalIfNeeded(event) {
-  if (event.target === elements.contactModal) {
-    closeContactModal();
-  }
-}
-
-if (elements.contactModal) {
-  elements.contactModal.addEventListener("click", closeContactModalIfNeeded);
-}
 if (elements.resumeModal) {
   elements.resumeModal.addEventListener("click", (event) => {
     if (event.target === elements.resumeModal) {

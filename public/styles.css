@@ -1565,12 +1565,6 @@ textarea {
   box-shadow: 0 0 0 1px rgba(255, 45, 85, 0.25);
 }
 
-.status-message {
-  min-height: 18px;
-  font-size: 0.9rem;
-  color: var(--primary);
-}
-
 @media (max-width: 720px) {
   #app {
     padding: 32px 18px 70px;
