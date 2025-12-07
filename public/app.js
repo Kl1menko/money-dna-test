@@ -90,11 +90,17 @@ function initApp() {
 
   const progressData = loadProgressFromLocalStorage();
   const urlParams = new URLSearchParams(window.location.search);
+  const sharedInlineResult = urlParams.get("data");
   const sharedResultId = urlParams.get("id");
   const showDemoResult =
     urlParams.get("demo") === "1" || urlParams.get("demo") === "true";
 
   initStackedCardsAnimation();
+
+  if (sharedInlineResult) {
+    const ok = restoreResultFromLink(sharedInlineResult, urlParams.get("screen"));
+    if (ok) return;
+  }
 
   if (sharedResultId) {
     fetchResultById(sharedResultId);
@@ -1214,11 +1220,15 @@ async function shareResultToTelegram() {
     if (!state.resultId) {
       await persistResults();
     }
-    if (!state.resultId) {
-      window.alert("Не вдалося згенерувати посилання. Спробуй ще раз.");
-      return;
+    if (state.resultId) {
+      shareUrl = buildShareLink(state.resultId);
+    } else {
+      shareUrl = buildInlineShareLink();
+      if (!shareUrl) {
+        window.alert("Не вдалося згенерувати посилання. Спробуй ще раз.");
+        return;
+      }
     }
-    shareUrl = buildShareLink(state.resultId);
   }
 
   const shareText = buildTelegramShareText();
@@ -1266,6 +1276,63 @@ function buildTelegramShareText() {
     })
     .join("\n");
   return `Мій Грошовий ДНК-профіль:\n${list}\nПовний розбір за посиланням:`;
+}
+
+function encodeInlineResult() {
+  try {
+    const payload = {
+      scores: state.scores,
+      answers: state.answers,
+      userMeta: state.userMeta,
+      topArchetypes: getTopArchetypes(3)
+    };
+    const json = JSON.stringify(payload);
+    const bytes = new TextEncoder().encode(json);
+    let binary = "";
+    bytes.forEach((b) => {
+      binary += String.fromCharCode(b);
+    });
+    return btoa(binary);
+  } catch (err) {
+    console.error("Не вдалося закодувати результат", err);
+    return null;
+  }
+}
+
+function decodeInlineResult(token) {
+  const binary = atob(token);
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  const json = new TextDecoder().decode(bytes);
+  return JSON.parse(json);
+}
+
+function buildInlineShareLink() {
+  const token = encodeInlineResult();
+  if (!token) return null;
+  return buildShareLink(null, { data: token, screen: "screen-3-summary" });
+}
+
+function restoreResultFromLink(token, screenParam) {
+  try {
+    const payload = decodeInlineResult(token);
+    if (!payload || !payload.scores) return false;
+    state.scores = payload.scores || {};
+    state.answers = payload.answers || [];
+    state.userMeta = {
+      ...state.userMeta,
+      ...(payload.userMeta || {})
+    };
+    state.resultId = payload.id || null;
+    state.isDemoResult = false;
+    renderSummary();
+    renderDetails();
+    const targetScreen = screenParam || "screen-3-summary";
+    showScreen(targetScreen);
+    return true;
+  } catch (err) {
+    console.error("Не вдалося прочитати результат з посилання", err);
+    return false;
+  }
 }
 
 async function fetchResultById(id) {
