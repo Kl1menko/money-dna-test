@@ -3,11 +3,13 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const { initDb, saveResult, getResultById } = require("./db");
+const fs = require("fs/promises");
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const USER_META_LOG = path.join(__dirname, "..", "data", "user-meta.log");
 
 app.use(cors());
 app.use(express.json());
@@ -23,6 +25,51 @@ function validatePayload(body) {
   }
   return null;
 }
+
+async function persistUserMeta({
+  name,
+  email = null,
+  telegram = null,
+  purpose = null,
+  userAgent = null
+}) {
+  const line = JSON.stringify(
+    {
+      ts: new Date().toISOString(),
+      name,
+      email,
+      telegram,
+      purpose,
+      userAgent
+    }
+  );
+
+  await fs.appendFile(USER_META_LOG, `${line}\n`, "utf8");
+}
+
+app.post("/api/user-meta", async (req, res) => {
+  try {
+    const { name = "", email = null, telegram = null, purpose = null } = req.body || {};
+    const trimmedName = String(name || "").trim();
+
+    if (!trimmedName || trimmedName.length < 2) {
+      return res.status(400).json({ status: "error", message: "name is required" });
+    }
+
+    await persistUserMeta({
+      name: trimmedName,
+      email: email ? String(email).trim() : null,
+      telegram: telegram ? String(telegram).trim() : null,
+      purpose: purpose ? String(purpose).trim() : null,
+      userAgent: req.headers["user-agent"] || null
+    });
+
+    res.json({ status: "ok" });
+  } catch (err) {
+    console.error("Failed to save user meta", err);
+    res.status(500).json({ status: "error", message: "Internal server error" });
+  }
+});
 
 app.post("/api/results", async (req, res) => {
   try {

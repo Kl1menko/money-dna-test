@@ -163,6 +163,7 @@ function wireButtons() {
         return;
       }
       updateUserMetaFromInputs();
+      saveUserMetaToServer();
       startTestFlow();
     });
 
@@ -206,6 +207,14 @@ function wireButtons() {
       resetTestState();
       showScreen("screen-0-preview");
     });
+
+  const devSummaryBtn = document.getElementById("btn-dev-summary");
+  if (devSummaryBtn) {
+    devSummaryBtn.addEventListener("click", () => {
+      showDemoSummary();
+      showScreen("screen-3-summary");
+    });
+  }
 }
 
 function initBackToTop() {
@@ -1157,6 +1166,33 @@ function updateInputsFromState() {
   Object.entries(userInputs).forEach(([key, input]) => {
     input.value = state.userMeta[key] || "";
   });
+}
+
+async function saveUserMetaToServer() {
+  const payload = {
+    name: (state.userMeta.name || "").trim(),
+    email: (state.userMeta.email || "").trim() || null,
+    telegram: (state.userMeta.telegram || "").trim() || null,
+    purpose: (state.userMeta.purpose || "").trim() || null
+  };
+
+  if (!payload.name) return;
+
+  try {
+    const response = await fetch("/api/user-meta", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      console.warn("Не вдалося зберегти дані користувача:", await response.text());
+    }
+  } catch (err) {
+    console.warn("Не вдалося зберегти дані користувача:", err);
+  }
 }
 
 function shuffleArray(arr) {
