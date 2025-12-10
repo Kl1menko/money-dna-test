@@ -136,6 +136,12 @@ function wireButtons() {
     closeAnswersBtn.addEventListener("click", () => closeAnswersModal());
   }
 
+  document.querySelectorAll("[data-flow-step]").forEach((step) => {
+    const header = step.querySelector(".flow-step__header");
+    if (!header) return;
+    header.addEventListener("click", () => toggleFlowStep(step));
+  });
+
   document.querySelectorAll("[data-screen-target]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const target = btn.getAttribute("data-screen-target");
@@ -207,14 +213,6 @@ function wireButtons() {
       resetTestState();
       showScreen("screen-0-preview");
     });
-
-  const devSummaryBtn = document.getElementById("btn-dev-summary");
-  if (devSummaryBtn) {
-    devSummaryBtn.addEventListener("click", () => {
-      showDemoSummary();
-      showScreen("screen-3-summary");
-    });
-  }
 }
 
 function initBackToTop() {
@@ -251,6 +249,19 @@ function wireUserForm() {
       setUserDataError("");
     });
   });
+}
+
+function toggleFlowStep(stepEl) {
+  const isOpen = stepEl.classList.contains("is-open");
+  document.querySelectorAll("[data-flow-step]").forEach((el) => {
+    el.classList.remove("is-open");
+    el.setAttribute("aria-expanded", "false");
+  });
+
+  if (!isOpen) {
+    stepEl.classList.add("is-open");
+    stepEl.setAttribute("aria-expanded", "true");
+  }
 }
 
 function setUserDataError(message = "", highlightKeys = []) {

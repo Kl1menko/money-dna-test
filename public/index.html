@@ -105,46 +105,90 @@
           <h3>8 грошових архетипів</h3>
           <p>Кожна роль — про окрему енергію взаємодії з ресурсами.</p>
           <div class="archetype-grid__cards">
-            <article>
-              <span>👑</span>
-              <strong>Король</strong>
-              <p>Стратегія, структура, довгострокова цінність.</p>
-            </article>
-            <article>
-              <span>🛡️</span>
-              <strong>Хранитель</strong>
-              <p>Безпека, резерви, стабілізація ризиків.</p>
-            </article>
-            <article>
-              <span>🤝</span>
-              <strong>Опікун</strong>
-              <p>Тепло, підтримка, монетизація турботи.</p>
-            </article>
-            <article>
-              <span>💞</span>
-              <strong>Коханець</strong>
-              <p>Насолода, естетика, магнітний стан.</p>
-            </article>
-            <article>
-              <span>✨</span>
-              <strong>Маг</strong>
-              <p>Інтуїція, ідеї, трансформаційні продукти.</p>
-            </article>
-            <article>
-              <span>🔥</span>
-              <strong>Бунтар</strong>
-              <p>Свобода, ризик, проривні сценарії.</p>
-            </article>
-            <article>
-              <span>🌟</span>
-              <strong>Герой</strong>
-              <p>Присутність, публічність, вплив.</p>
-            </article>
-            <article>
-              <span>🌿</span>
-              <strong>Об’єднувач</strong>
-              <p>Ком’юніті, довіра, партнерства.</p>
-            </article>
+            <div class="archetype-track">
+              <article>
+                <span>👑</span>
+                <strong>Король</strong>
+                <p>Стратегія, структура, довгострокова цінність.</p>
+              </article>
+              <article>
+                <span>🛡️</span>
+                <strong>Хранитель</strong>
+                <p>Безпека, резерви, стабілізація ризиків.</p>
+              </article>
+              <article>
+                <span>🤝</span>
+                <strong>Опікун</strong>
+                <p>Тепло, підтримка, монетизація турботи.</p>
+              </article>
+              <article>
+                <span>💞</span>
+                <strong>Коханець</strong>
+                <p>Насолода, естетика, магнітний стан.</p>
+              </article>
+              <article>
+                <span>✨</span>
+                <strong>Маг</strong>
+                <p>Інтуїція, ідеї, трансформаційні продукти.</p>
+              </article>
+              <article>
+                <span>🔥</span>
+                <strong>Бунтар</strong>
+                <p>Свобода, ризик, проривні сценарії.</p>
+              </article>
+              <article>
+                <span>🌟</span>
+                <strong>Герой</strong>
+                <p>Присутність, публічність, вплив.</p>
+              </article>
+              <article>
+                <span>🌿</span>
+                <strong>Об’єднувач</strong>
+                <p>Ком’юніті, довіра, партнерства.</p>
+              </article>
+
+              <!-- дублікат для безшовного лупу -->
+              <article aria-hidden="true">
+                <span>👑</span>
+                <strong>Король</strong>
+                <p>Стратегія, структура, довгострокова цінність.</p>
+              </article>
+              <article aria-hidden="true">
+                <span>🛡️</span>
+                <strong>Хранитель</strong>
+                <p>Безпека, резерви, стабілізація ризиків.</p>
+              </article>
+              <article aria-hidden="true">
+                <span>🤝</span>
+                <strong>Опікун</strong>
+                <p>Тепло, підтримка, монетизація турботи.</p>
+              </article>
+              <article aria-hidden="true">
+                <span>💞</span>
+                <strong>Коханець</strong>
+                <p>Насолода, естетика, магнітний стан.</p>
+              </article>
+              <article aria-hidden="true">
+                <span>✨</span>
+                <strong>Маг</strong>
+                <p>Інтуїція, ідеї, трансформаційні продукти.</p>
+              </article>
+              <article aria-hidden="true">
+                <span>🔥</span>
+                <strong>Бунтар</strong>
+                <p>Свобода, ризик, проривні сценарії.</p>
+              </article>
+              <article aria-hidden="true">
+                <span>🌟</span>
+                <strong>Герой</strong>
+                <p>Присутність, публічність, вплив.</p>
+              </article>
+              <article aria-hidden="true">
+                <span>🌿</span>
+                <strong>Об’єднувач</strong>
+                <p>Ком’юніті, довіра, партнерства.</p>
+              </article>
+            </div>
           </div>
         </section>
 
@@ -226,42 +270,62 @@
         <section id="section-flow" class="promo-section flow-section">
           <div class="section-heading">
             <p class="section-eyebrow">Як це працює</p>
-            <h2>Як проходить діагностика?</h2>
-          </div>
-          <div class="flow-steps">
-            <article class="flow-step">
+          <h2>Як проходить діагностика?</h2>
+        </div>
+        <div class="flow-steps" role="tablist" aria-label="Як проходить діагностика">
+          <article class="flow-step is-open" data-flow-step role="tab" aria-expanded="true">
+            <header class="flow-step__header">
               <span class="flow-step-number">01</span>
               <h3>Відповідаєш на 56 тверджень</h3>
+              <span class="flow-step__chevron" aria-hidden="true">▾</span>
+            </header>
+            <div class="flow-step__body">
               <p>
                 Для кожного обираєш по шкалі від 1 до 5: наскільки це про тебе.
                 Це займає близько 10–12 хвилин.
               </p>
-            </article>
-            <article class="flow-step">
+            </div>
+          </article>
+          <article class="flow-step" data-flow-step role="tab" aria-expanded="false">
+            <header class="flow-step__header">
               <span class="flow-step-number">02</span>
               <h3>Система рахує 8 архетипів</h3>
+              <span class="flow-step__chevron" aria-hidden="true">▾</span>
+            </header>
+            <div class="flow-step__body">
               <p>
                 Кожне твердження прив’язане до одного з 8 фінансових ролей. Ми
                 аналізуємо твої відповіді і будуємо унікальний профіль.
               </p>
-            </article>
-            <article class="flow-step">
+            </div>
+          </article>
+          <article class="flow-step" data-flow-step role="tab" aria-expanded="false">
+            <header class="flow-step__header">
               <span class="flow-step-number">03</span>
               <h3>Отримуєш свій профіль</h3>
+              <span class="flow-step__chevron" aria-hidden="true">▾</span>
+            </header>
+            <div class="flow-step__body">
               <p>
                 На екрані — топ-3 архетипи, усі 8 ролей з балами, короткі
                 пояснення.
               </p>
-            </article>
-            <article class="flow-step">
+            </div>
+          </article>
+          <article class="flow-step" data-flow-step role="tab" aria-expanded="false">
+            <header class="flow-step__header">
               <span class="flow-step-number">04</span>
               <h3>Читаєш детальний розбір</h3>
+              <span class="flow-step__chevron" aria-hidden="true">▾</span>
+            </header>
+            <div class="flow-step__body">
               <p>
                 Для трьох провідних архетипів бачиш сильні сторони, тінь, вплив
                 на борги/дохід і рекомендації, куди рухатися далі.
               </p>
-            </article>
-          </div>
+            </div>
+          </article>
+        </div>
         </section>
 
         <section id="section-audience" class="promo-section audience-section">
@@ -494,14 +558,6 @@
         </div>
       </section>
 
-      <div class="dev-shortcut">
-        <p class="dev-shortcut__label">
-          Технічна кнопка: одразу відкрити екран з фейковими результатами (тимчасово)
-        </p>
-        <button id="btn-dev-summary" class="btn-primary">
-          Перейти до результатів
-        </button>
-      </div>
     </div>
 
     <div id="answers-modal" class="modal hidden">
